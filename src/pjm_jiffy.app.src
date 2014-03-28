@@ -1,0 +1,12 @@
+{application, pjm,
+ [
+  {description, "PJ Model convert to/from jiffy compatible erlang terms."},
+  {vsn, git},
+  {registered, []},
+  {applications, [
+                  kernel,
+                  stdlib,
+                  pjm
+                 ]},
+  {env, []}
+ ]}.
