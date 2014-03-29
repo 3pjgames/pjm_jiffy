@@ -43,7 +43,7 @@ to_json_acc(_K, {bin, _, _}, List) ->
 to_json_acc(K, Value, List) ->
     [{K, term_to_json(Value)}|List].
 
-term_to_json({pjm, _, _, _} = Model) ->
+term_to_json({pjm, _, _} = Model) ->
     to_json(Model);
 term_to_json([]) -> [];
 term_to_json({}) -> {[]};
