@@ -3,11 +3,11 @@
 
 -include("./test_helpers.hrl").
 
--pjm_stores_in(users).
--pjm_fields([
-             {login, binary, <<"test">>},
-             {embed, pjm_jiffy_tests}
-            ]).
+-pjm([{stores_in, users},
+      {fields, [
+                {login, binary, <<"test">>},
+                {embed, pjm_jiffy_tests}
+               ]}]).
 
 from_json_test() ->
     M = pjm_jiffy:from_json(
