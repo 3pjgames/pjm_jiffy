@@ -1,6 +1,7 @@
 -module(pjm_jiffy).
 
 -export([from_json/2, to_json/1]).
+-export([term_to_json/1]).
 
 -type value() :: object() | array() | string() | number() | null() | boolean().
 -type key() :: binary() | atom().
@@ -48,12 +49,12 @@ term_to_json({pjm, _, _} = Model) ->
 term_to_json([]) -> [];
 term_to_json({}) -> {[]};
 term_to_json([{Key, _Value}|_Rest] = List) when is_atom(Key) orelse is_binary(Key) ->
-    lists:map(fun({K, V}) -> {K, term_to_json(V)} end, List);
+    {lists:map(fun({K, V}) -> {K, term_to_json(V)} end, List)};
 term_to_json(List) when is_list(List) ->
     lists:map(fun term_to_json/1, List);
 term_to_json({List}) when is_list(List) ->
     term_to_json(List);
-term_to_json({<<Id:96>>}) ->
+term_to_json({<<_:96>> = Id}) ->
     %% display bson id as hex string
     << << (integer_to_binary(Bits, 16))/binary >> || << Bits:4 >> <= Id >>;
 term_to_json(Term) -> Term.
