@@ -52,6 +52,8 @@ term_to_json([{Key, _Value}|_Rest] = List) when is_atom(Key) orelse is_binary(Ke
     {lists:map(fun({K, V}) -> {K, term_to_json(V)} end, List)};
 term_to_json(List) when is_list(List) ->
     lists:map(fun term_to_json/1, List);
+term_to_json({[]}) ->
+    {[]};
 term_to_json({List}) when is_list(List) ->
     term_to_json(List);
 term_to_json({<<_:96>> = Id}) ->
