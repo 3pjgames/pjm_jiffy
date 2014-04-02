@@ -24,14 +24,16 @@ from_json({Object}, Model) ->
     pjm:set(Object, Model).
 
 -spec to_json(pjm:model()) -> object().
-to_json(Model) ->
-    {
-      pjm:fold(
-        fun to_json_acc/3,
-        [],
-        Model
-       )
-    }.
+to_json({pjm, Module, _} = Model) ->
+    case pjm:info(to_json, Model) of
+        undefined ->
+            { pjm:fold(
+                fun to_json_acc/3,
+                [],
+                Model
+               ) };
+        Fun -> Module:Fun(Model)
+    end.
 
 to_json_acc(_K, undefined, List) ->
     List;
@@ -59,4 +61,5 @@ term_to_json({List}) when is_list(List) ->
 term_to_json({<<_:96>> = Id}) ->
     %% display bson id as hex string
     << << (integer_to_binary(Bits, 16))/binary >> || << Bits:4 >> <= Id >>;
+term_to_json(undefined) -> null;
 term_to_json(Term) -> Term.
