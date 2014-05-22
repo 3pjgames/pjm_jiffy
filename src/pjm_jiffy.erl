@@ -50,8 +50,8 @@ term_to_json({pjm, _, _} = Model) ->
     to_json(Model);
 term_to_json([]) -> [];
 term_to_json({}) -> {[]};
-term_to_json([{Key, _Value}|_Rest] = List) when is_atom(Key) orelse is_binary(Key) ->
-    {lists:map(fun({K, V}) -> {K, term_to_json(V)} end, List)};
+term_to_json([{_Key, _Value}|_Rest] = List) ->
+    {lists:map(fun({K, V}) -> {term_to_json_key(K), term_to_json(V)} end, List)};
 term_to_json(List) when is_list(List) ->
     lists:map(fun term_to_json/1, List);
 term_to_json({[]}) ->
@@ -62,4 +62,9 @@ term_to_json({<<_:96>> = Id}) ->
     %% display bson id as hex string
     << << (integer_to_binary(Bits, 16))/binary >> || << Bits:4 >> <= Id >>;
 term_to_json(undefined) -> null;
+term_to_json(Dict) when is_tuple(Dict) andalso element(1, Dict) =:= dict ->
+    term_to_json({dict:to_list(Dict)});
 term_to_json(Term) -> Term.
+
+term_to_json_key(Key) when is_binary(Key) orelse is_atom(Key) -> Key;
+term_to_json_key(Key) when is_integer(Key) -> integer_to_binary(Key).

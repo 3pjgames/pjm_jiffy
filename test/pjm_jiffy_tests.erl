@@ -35,5 +35,6 @@ term_to_json_test_() ->
      ?_assertEqual(<<"533A39F6973FF85C86000001">>, pjm_jiffy:term_to_json({<<83,58,57,246,151,63,248,92,134,0,0,1>>})),
      ?_assertEqual({[{foo, 1}]}, pjm_jiffy:term_to_json([{foo, 1}])),
      ?_assertEqual({[]}, pjm_jiffy:term_to_json({[]})),
-     ?_assertEqual(null, pjm_jiffy:term_to_json(undefined))
+     ?_assertEqual(null, pjm_jiffy:term_to_json(undefined)),
+     ?_assertEqual({[{<<"3">>,3},{<<"bar">>,2},{foo,1}]}, pjm_jiffy:term_to_json(dict:from_list([{foo, 1}, {<<"bar">>, 2}, {3, 3}])))
     ].
