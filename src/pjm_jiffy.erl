@@ -58,6 +58,9 @@ term_to_json({[]}) ->
     {[]};
 term_to_json({List}) when is_list(List) ->
     term_to_json(List);
+term_to_json({A, B, C} = Timestamp) when is_integer(A) andalso is_integer(B) andalso is_integer(C) ->
+    {{Y, M, D}, {H, Min, S}} = calendar:now_to_datetime(Timestamp),
+    io_lib:format("~4..0B-~2..0B-~2..0BT~2..0B:~2..0B:~2..0BZ", [Y, M, D, H, Min, S]);
 term_to_json({<<_:96>> = Id}) ->
     %% display bson id as hex string
     << << (integer_to_binary(Bits, 16))/binary >> || << Bits:4 >> <= Id >>;
