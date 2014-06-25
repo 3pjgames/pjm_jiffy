@@ -3,14 +3,14 @@
 -export([from_json/2, to_json/1]).
 -export([term_to_json/1]).
 
--type value() :: object() | array() | string() | number() | null() | boolean().
+-type value() :: object() | jarray() | jstring() | jnumber() | null() | jboolean().
 -type key() :: binary() | atom().
--type kv() :: { key() | value() }.
+-type kv() :: { key(), value() }.
 -type object() :: {[kv()]}.
--type array() :: [value()].
--type string() :: binary().
--type number() :: number().
--type boolean() :: true | false.
+-type jarray() :: [value()].
+-type jstring() :: binary().
+-type jnumber() :: number().
+-type jboolean() :: true | false.
 -type null() :: null.
 
 -export_type([value/0]).
@@ -63,7 +63,7 @@ term_to_json({A, B, C} = Timestamp) when is_integer(A) andalso is_integer(B) and
     list_to_binary(io_lib:format("~4..0B-~2..0B-~2..0BT~2..0B:~2..0B:~2..0BZ", [Y, M, D, H, Min, S]));
 term_to_json({<<_:96>> = Id}) ->
     %% display bson id as hex string
-    << << (integer_to_binary(Bits, 16))/binary >> || << Bits:4 >> <= Id >>;
+    << << (encode_hex_bit(Bits))/binary >> || << Bits:4 >> <= Id >>;
 term_to_json(undefined) -> null;
 term_to_json(Dict) when is_tuple(Dict) andalso element(1, Dict) =:= dict ->
     term_to_json({dict:to_list(Dict)});
@@ -71,3 +71,8 @@ term_to_json(Term) -> Term.
 
 term_to_json_key(Key) when is_binary(Key) orelse is_atom(Key) -> Key;
 term_to_json_key(Key) when is_integer(Key) -> integer_to_binary(Key).
+
+encode_hex_bit(Bit) when Bit < 10 ->
+    integer_to_binary(Bit);
+encode_hex_bit(Bit) ->
+    << (Bit - 10 + 97) >>.
